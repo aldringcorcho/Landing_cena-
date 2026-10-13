@@ -1,0 +1,25 @@
+{
+  "name": "cena-con-tu-futuro-yo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Landing de «Cena con tu futuro yo», teatro experimental para una sola persona.",
+  "scripts": {
+    "dev": "next dev",
+    "dev:movil": "next dev -H 0.0.0.0",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "lenis": "^1.3.26",
+    "next": "^16.4.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}

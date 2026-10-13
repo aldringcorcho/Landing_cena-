@@ -1,0 +1,759 @@
+/* Paleta "Sobremesa": de la noche de la cena a la mañana siguiente */
+:root{
+  --noche:#14101a;
+  --vino:#4a1f2b;
+  --vela:#e8c9a0;
+  --manana:#f3ede2;
+  --dorado:#cdb998;
+  --ambar:#e0a96d;
+  --burdeos:#7a2e3a;
+  --rosa:#b5838d;
+  --fundido:500px; /* alto del degradado entre secciones */
+  /* Escala de esquinas: misma familia de formas en toda la landing */
+  --radio-grande:28px; /* tarjetas */
+  --radio:18px;        /* platos del menú */
+  --radio-peq:12px;    /* campos */
+  --pildora:999px;     /* botones, opciones y menú */
+  /* Tipografía: serif elegante para títulos, sans limpia para leer, y la de cartel para la cinta */
+  --serif:var(--font-serif), "Cormorant Garamond", Georgia, serif;
+  --sans:var(--font-sans), Jost, "Helvetica Neue", Arial, sans-serif;
+  --cartel:var(--font-cartel), "Bebas Neue", Impact, sans-serif;
+}
+
+/* Colores de cada banda. Los componentes solo usan estas variables. */
+body, .banda-1{
+  --fondo:var(--noche); --tinta:#fff; --texto:#e9e6e0; --tenue:#a7a39b; --acento:var(--dorado);
+  --linea:#3a3a3a; --campo:#1f1924; --campo-texto:#fff; --boton:var(--manana); --boton-texto:#000; --boton-hover:#fff; --error:#ff9d8a;
+}
+.banda-2{
+  --fondo:var(--vino); --tinta:var(--manana); --texto:var(--manana); --tenue:#d9c3bf; --acento:var(--ambar);
+  --linea:rgba(243,237,226,.22); --boton:var(--ambar); --boton-texto:#2a1a14; --boton-hover:#f0c08c;
+}
+.banda-3{
+  --fondo:var(--vela); --tinta:#2a1a14; --texto:#2a1a14; --tenue:#5e4636; --acento:var(--burdeos);
+  --linea:rgba(42,26,20,.28); --campo:#f6e6cf; --campo-texto:#2a1a14; --boton:var(--burdeos); --boton-texto:var(--manana); --boton-hover:#5e1f2a; --error:#9b1c1c;
+}
+.banda-4{
+  --fondo:var(--manana); --tinta:#2b2420; --texto:#2b2420; --tenue:#6b5d55; --acento:var(--rosa);
+  --linea:rgba(43,36,32,.18);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0; background:var(--noche); color:var(--texto); font:16px/1.65 var(--sans)}
+a{color:inherit}
+img{display:block; max-width:100%}
+.centro{max-width:1180px; margin:0 auto; padding:0 20px}
+.estrecho{max-width:760px; margin:0 auto; padding:0 20px}
+
+/* Bandas de color: cada una se funde con la siguiente en su parte de abajo.
+   --de es el color de la banda y --a el de la siguiente. */
+.banda-1{--de:var(--noche); --a:var(--vino)}
+.banda-2{--de:var(--vino);  --a:var(--vela)}
+.banda-3{--de:var(--vela);  --a:var(--manana)}
+.banda-4{--de:var(--manana); --a:var(--manana)}
+
+/* Grano muy fino encima del degradado: evita que se vean "escalones" de color */
+:root{--grano:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .10 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E")}
+
+.banda-1, .banda-2, .banda-3, .banda-4{
+  color:var(--texto);
+  /* Respaldo para navegadores sin color-mix */
+  --degradado:linear-gradient(var(--de) calc(100% - var(--fundido)), var(--a));
+  background:var(--degradado);
+}
+/* El grano va en una sola capa fija encima de toda la página. Si estuviera en cada sección,
+   los velos opacos (hero, vídeo) lo taparían y se vería una línea donde terminan. */
+body::after{content:""; position:fixed; inset:0; z-index:100; pointer-events:none; background:var(--grano)}
+@supports (color:color-mix(in oklab, red, blue)){
+  .banda-1, .banda-2, .banda-3, .banda-4{
+    /* Curva suave (entra y sale despacio) y mezcla en OKLab: sin bordes visibles ni tonos turbios */
+    --degradado:linear-gradient(
+      var(--de) calc(100% - var(--fundido)),
+      color-mix(in oklab, var(--de) 97%, var(--a)) calc(100% - var(--fundido) * .88),
+      color-mix(in oklab, var(--de) 89%, var(--a)) calc(100% - var(--fundido) * .76),
+      color-mix(in oklab, var(--de) 75%, var(--a)) calc(100% - var(--fundido) * .63),
+      color-mix(in oklab, var(--de) 57%, var(--a)) calc(100% - var(--fundido) * .5),
+      color-mix(in oklab, var(--de) 38%, var(--a)) calc(100% - var(--fundido) * .37),
+      color-mix(in oklab, var(--de) 20%, var(--a)) calc(100% - var(--fundido) * .24),
+      color-mix(in oklab, var(--de) 7%, var(--a)) calc(100% - var(--fundido) * .12),
+      var(--a)
+    );
+  }
+}
+/* El texto puede quedar sobre el primer tramo del degradado, donde el color apenas ha cambiado */
+.banda-1, .banda-2, .banda-3{padding-bottom:calc(var(--fundido) * .65)}
+
+/* 1. Hero: ocupa toda la pantalla */
+.hero{position:relative; min-height:100vh; min-height:100svh; display:flex; align-items:center; justify-content:center; text-align:center}
+.hero-contenido{position:relative; width:100%; padding:110px 0 80px}
+/* Cinta casi transparente (≈80%): un velo muy suave que se desvanece arriba y abajo, así que
+   no se ven los bordes de la franja. Sin desenfoque, porque el blur marca un borde recto. */
+.hero .cinta{background:linear-gradient(transparent, rgba(34,26,40,.2) 30%, rgba(34,26,40,.2) 70%, transparent)}
+.boton-grande{margin-top:34px; padding:16px 42px; font-size:17px}
+
+/* 2. El concepto: frase grande */
+.concepto{padding:110px 0 0; text-align:center}
+.gancho{font-family:var(--serif); font-weight:400; font-size:clamp(34px,5.2vw,66px); line-height:1.1; color:var(--tinta); max-width:1000px; margin:0 auto}
+.gancho em{display:block; margin-top:.45em; font-style:italic; color:var(--acento)}
+.concepto-texto{margin-top:40px; color:var(--tenue); font-size:18px}
+
+/* 4. El menú: tarjeta desplegable con los platos apilados */
+#experiencia{padding-top:140px}
+#menu{padding:40px 0 140px}
+.menu-intro{color:var(--tenue); font-size:18px}
+
+/* Fondos de ambiente (sin vídeo): resplandores cálidos como luz de vela.
+   Cada uno se desvanece antes del borde de su sección, así que no crean líneas. */
+.hero{
+  background:
+    radial-gradient(ellipse 55% 42% at 50% 60%, rgba(224,169,109,.16), transparent 70%),
+    radial-gradient(ellipse 40% 38% at 15% 22%, rgba(122,46,58,.38), transparent 70%),
+    radial-gradient(ellipse 36% 32% at 86% 30%, rgba(205,185,152,.10), transparent 70%);
+}
+.concepto{background:radial-gradient(ellipse 50% 40% at 50% 35%, rgba(122,46,58,.22), transparent 70%)}
+
+/* Debajo de la cinta: texto grande a la izquierda y, detrás, el vídeo de la vela a la derecha.
+   --video-ancho es EL valor para cambiar el tamaño del vídeo; el alto se calcula solo (16:9). */
+.hero{overflow-x:clip}  /* el vídeo llega al borde de la pantalla: que nunca cree scroll lateral */
+.hero-fila{
+  --video-ancho:min(80vw, 1350px);
+  position:relative; display:flex; align-items:center;
+  min-height:calc(var(--video-ancho) * .5625 * .85);
+  max-width:1180px; margin:20px auto 0; padding:0 20px; text-align:left;
+}
+.hero-texto{position:relative; z-index:1; max-width:540px}
+.hero-fila .subtitulo{margin:0; font-size:clamp(40px,4.8vw,70px); line-height:1.02; font-weight:500; letter-spacing:-.01em}
+.hero-apoyo{margin:22px 0 0; max-width:440px; font-size:18px; color:var(--tenue); text-shadow:0 2px 12px rgba(0,0,0,.7)}
+.hero-fila .boton-grande{margin-top:32px}
+
+/* El vídeo va en espejo (la vela a la derecha) y pegado al borde derecho de la pantalla.
+   Máscara elíptica centrada en la vela y el gato: arriba, abajo e izquierda llega a
+   transparente, así que no se ve ningún borde; a la derecha continúa fuera de la pantalla. */
+.video-vela{
+  position:absolute; top:50%; right:calc(-1 * max(0px, (100vw - 1180px) / 2));
+  width:var(--video-ancho); aspect-ratio:16/9; object-fit:cover;
+  transform:translateY(-50%) scaleX(-1); filter:brightness(.9) saturate(1.1); pointer-events:none;
+  /* Con el espejo, "izquierda" del elemento = derecha de la pantalla: el centro al 40% del
+     elemento queda al 60% de la pantalla, sobre la vela y el gato */
+  -webkit-mask-image:radial-gradient(ellipse 62% 50% at 40% 50%, #000 50%, transparent 100%);
+          mask-image:radial-gradient(ellipse 62% 50% at 40% 50%, #000 50%, transparent 100%);
+}
+.subtitulo, .gancho, .concepto-texto{text-shadow:0 2px 14px rgba(0,0,0,.6)}
+/* En móvil, una sola columna: texto centrado y el vídeo debajo */
+@media (max-width:900px){
+  .hero-fila{flex-direction:column; min-height:0; text-align:center}
+  .hero-texto, .hero-apoyo{margin-left:auto; margin-right:auto}
+  .video-vela{position:relative; top:auto; right:auto; width:130%; max-width:720px; margin:-10px 0 -30px;
+    transform:scaleX(-1);
+    -webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%, #000 50%, transparent 100%);
+            mask-image:radial-gradient(ellipse 50% 50% at 50% 50%, #000 50%, transparent 100%)}
+}
+#experiencia{background:radial-gradient(ellipse 50% 40% at 50% 45%, rgba(224,169,109,.10), transparent 70%)}
+#menu{background:radial-gradient(ellipse 45% 45% at 50% 55%, rgba(20,16,26,.28), transparent 70%)}
+
+/* Tarjetas con brillo (Cómo funciona y La compañía).
+   El JS escribe en cada tarjeta la posición del cursor relativa a ella (--x/--y, en px) y en el
+   contenedor --xp (0 a 1 a lo ancho de la pantalla, para el tono). Como cada tarjeta recibe la
+   posición en sus propias coordenadas, el foco de luz "pasa" de una a otra igual que antes, pero
+   sin background-attachment:fixed, que obligaba a repintar todas las capas en cada scroll. */
+.glow{
+  --base:18;                 /* tono de partida: naranja de llama */
+  --spread:32;               /* recorrido del tono hasta el dorado */
+  --border:2;
+  --size:240;
+  --border-size:calc(var(--border) * 1px);
+  --spotlight-size:calc(var(--size) * 1px);
+  --hue:calc(var(--base) + var(--xp, 0) * var(--spread));
+  position:relative; padding:34px 30px 30px; border-radius:var(--radio-grande);
+  border:var(--border-size) solid rgba(243,237,226,.12);
+  background-color:rgba(243,237,226,.05);
+  background-image:radial-gradient(var(--spotlight-size) var(--spotlight-size) at calc(var(--x, -999) * 1px) calc(var(--y, -999) * 1px),
+    hsl(var(--hue) 90% 65% / .12), transparent);
+  background-size:calc(100% + 2 * var(--border-size)) calc(100% + 2 * var(--border-size));
+  background-position:50% 50%;
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+  box-shadow:0 1rem 2rem -1rem rgba(0,0,0,.7);
+}
+/* Dos capas sobre el borde: ::before es el color, ::after el reflejo blanco del centro */
+.glow::before, .glow::after{
+  content:""; position:absolute; inset:calc(var(--border-size) * -1); pointer-events:none;
+  border:var(--border-size) solid transparent; border-radius:inherit;
+  background-repeat:no-repeat; background-position:50% 50%;
+  background-size:calc(100% + 2 * var(--border-size)) calc(100% + 2 * var(--border-size));
+  /* La máscara deja ver solo el borde */
+  -webkit-mask:linear-gradient(transparent, transparent) padding-box, linear-gradient(#fff, #fff) border-box;
+  -webkit-mask-composite:source-in;
+          mask:linear-gradient(transparent, transparent) padding-box, linear-gradient(#fff, #fff) border-box;
+          mask-composite:intersect;
+}
+.glow::before{
+  background-image:radial-gradient(calc(var(--spotlight-size) * .75) calc(var(--spotlight-size) * .75) at calc(var(--x, -999) * 1px) calc(var(--y, -999) * 1px),
+    hsl(var(--hue) 95% 55% / 1), transparent 100%);
+  filter:brightness(1.6);
+}
+.glow::after{
+  background-image:radial-gradient(calc(var(--spotlight-size) * .5) calc(var(--spotlight-size) * .5) at calc(var(--x, -999) * 1px) calc(var(--y, -999) * 1px),
+    hsl(40 100% 96% / .7), transparent 100%);
+}
+/* Halo difuminado por fuera del borde */
+.glow-halo{position:absolute; inset:0; border-radius:inherit; pointer-events:none; filter:blur(calc(var(--border-size) * 10)); opacity:.9}
+.glow-halo::before{
+  content:""; position:absolute; inset:-10px; border:10px solid transparent; border-radius:inherit;
+  background-repeat:no-repeat; background-position:50% 50%; background-size:calc(100% + 20px) calc(100% + 20px);
+  background-image:radial-gradient(calc(var(--spotlight-size) * .75) calc(var(--spotlight-size) * .75) at calc(var(--x, -999) * 1px + 10px) calc(var(--y, -999) * 1px + 10px),
+    hsl(var(--hue) 95% 55% / .8), transparent 100%);
+  -webkit-mask:linear-gradient(transparent, transparent) padding-box, linear-gradient(#fff, #fff) border-box;
+  -webkit-mask-composite:source-in;
+          mask:linear-gradient(transparent, transparent) padding-box, linear-gradient(#fff, #fff) border-box;
+          mask-composite:intersect;
+}
+.glow > :not(.glow-halo){position:relative}
+.carta{
+  margin-top:30px; padding:0; border:1px solid rgba(243,237,226,.25); border-radius:var(--radio-grande);
+  background:linear-gradient(160deg, rgba(243,237,226,.16), rgba(243,237,226,.06));
+  -webkit-backdrop-filter:blur(18px) saturate(150%); backdrop-filter:blur(18px) saturate(150%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18), 0 24px 50px -24px rgba(0,0,0,.6);
+}
+.carta summary{display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; padding:26px 32px}
+.carta summary::before, .carta[open] summary::before{content:none}
+.carta-titulo{font-family:var(--serif); font-weight:500; font-size:28px; color:var(--tinta)}
+.carta-accion{font-size:14px; color:var(--acento); border:1px solid var(--acento); border-radius:var(--pildora); padding:6px 16px; transition:background .2s, color .2s}
+.carta summary:hover .carta-accion{background:var(--acento); color:var(--vino)}
+.carta[open] .carta-accion{font-size:0}
+.carta[open] .carta-accion::after{content:"Cerrar"; font-size:14px}
+.platos{list-style:none; margin:0; padding:0 32px}
+/* Cada plato se monta un poco sobre el anterior, como una pila */
+.platos li{
+  --mx:0; --my:0;   /* posición del cursor sobre el plato, de -1 a 1 (la escribe PlatosParallax) */
+  position:relative; padding:24px 26px; margin-top:-10px; border-radius:var(--radio);
+  background-color:var(--manana); color:#2b2420; box-shadow:0 -8px 20px -10px rgba(0,0,0,.45);
+  /* "backwards" y no "both": con "both" el transform final de la animación se quedaría
+     aplicado para siempre y anularía el parallax */
+  animation:servir .45s ease backwards;
+  transform-style:preserve-3d;
+  transition:transform .6s cubic-bezier(.2,.7,.2,1), box-shadow .4s ease;
+}
+.platos li:first-child{margin-top:0}
+.platos li:nth-child(2){animation-delay:.08s; background-color:#efe6d6}
+.platos li:nth-child(3){animation-delay:.16s; background-color:#ebdfcb}
+.platos h3{color:var(--vino); margin-bottom:4px}
+.platos p{margin:0; color:#6b5d55}
+.pase{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--burdeos); font-weight:600}
+.carta-nota{margin:0; padding:20px 32px 26px; font-size:14px; color:var(--tenue)}
+@keyframes servir{from{opacity:0; transform:translateY(-14px)}to{opacity:1; transform:none}}
+
+/* Parallax al pasar el ratón: el plato se adelanta sobre la pila y se inclina hacia el cursor,
+   y sus capas se mueven a distinta velocidad según su "profundidad": la etiqueta (más cerca)
+   se desplaza más, el título algo menos y la descripción casi nada. Un reflejo de luz se mueve
+   en sentido contrario para reforzar la sensación de volumen. */
+.platos li > *{transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.platos .pase{display:inline-block}
+.platos li:hover{
+  z-index:2;
+  transform:perspective(900px) translateY(-8px) scale(1.015) rotateX(calc(var(--my) * -4deg)) rotateY(calc(var(--mx) * 5deg));
+  box-shadow:0 26px 40px -20px rgba(0,0,0,.6);
+  background-image:radial-gradient(circle at calc(50% - var(--mx) * 35%) calc(50% - var(--my) * 35%), rgba(255,255,255,.55), transparent 60%);
+}
+.platos li:hover .pase{transform:translate3d(calc(var(--mx) * 14px), calc(var(--my) * 8px), 0)}
+.platos li:hover h3{transform:translate3d(calc(var(--mx) * 9px), calc(var(--my) * 5px), 0)}
+.platos li:hover p{transform:translate3d(calc(var(--mx) * 4px), calc(var(--my) * 2px), 0)}
+/* Mientras el cursor se mueve, las capas siguen al ratón sin retraso; al salir, vuelven despacio */
+.platos li.siguiendo, .platos li.siguiendo > *{transition-duration:.12s}
+
+@media (prefers-reduced-motion:reduce){
+  .platos li{animation:none}
+  .platos li:hover, .platos li:hover > *{transform:none}
+}
+
+/* Título grande que se desplaza de derecha a izquierda */
+.cinta{overflow:hidden; background:#221a28; padding:18px 0 10px; margin-top:10px;
+  /* Fundido en los laterales: el texto aparece y desaparece suavemente en vez de cortarse */
+  -webkit-mask-image:linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+          mask-image:linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+.pista{display:flex; width:max-content; animation:desplazar 28s linear infinite}
+.grupo{display:flex; align-items:center; flex:none}
+.grupo span{
+  font-family:var(--cartel); font-size:clamp(72px,11vw,170px);
+  line-height:1; color:var(--dorado); white-space:nowrap; padding:0 .25em;
+}
+.punto{width:clamp(18px,2.4vw,36px); aspect-ratio:1; border-radius:50%; background:var(--dorado); flex:none; margin:0 .6em}
+@keyframes desplazar{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.pista{animation:none}}
+.oculto{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+.subtitulo{margin:26px 20px 0; font-family:var(--serif); font-size:clamp(20px,2.6vw,30px); color:var(--tinta); font-weight:400}
+
+/* Menú: botones flotantes arriba a la derecha */
+nav{position:fixed; top:18px; right:18px; z-index:10}
+nav ul{list-style:none; margin:0; padding:0; display:flex; gap:12px}
+/* Efecto "liquid glass": fondo translúcido, desenfoque y brillo en el borde superior.
+   La base oscura mantiene el texto legible también sobre las secciones claras. */
+nav li{
+  border-radius:var(--pildora);
+  background:linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.06)), rgba(20,16,26,.38);
+  -webkit-backdrop-filter:blur(14px) saturate(160%); backdrop-filter:blur(14px) saturate(160%);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35), inset 0 -1px 0 rgba(0,0,0,.25), 0 6px 20px rgba(0,0,0,.35);
+  transition:background .2s, border-color .2s, transform .2s, box-shadow .2s;
+}
+nav li:hover{background:linear-gradient(180deg, rgba(255,255,255,.32), rgba(255,255,255,.12)), rgba(20,16,26,.38)}
+nav li:has(a.activo){background:linear-gradient(180deg, rgba(255,255,255,.38), rgba(255,255,255,.16)), rgba(20,16,26,.38); border-color:rgba(255,255,255,.4)}
+nav a{
+  display:flex; align-items:center; gap:9px; padding:9px 20px 9px 16px;
+  color:rgba(255,255,255,.88); border-radius:var(--pildora); text-decoration:none;
+  font-size:15px; font-weight:600; text-shadow:0 1px 2px rgba(0,0,0,.35);
+}
+nav a.activo{color:#fff}
+nav svg{width:22px; height:22px; fill:currentColor; flex:none}
+
+/* Relleno desde el origen (components/Nav.tsx): un círculo dorado nace donde entra el cursor
+   (--ox, --oy) con el diámetro justo para cubrir el botón (--d) y crece hasta llenarlo.
+   isolation + z-index:-1 lo dejan detrás del icono y el texto, pero dentro del botón. */
+nav a{
+  position:relative; isolation:isolate; overflow:hidden;
+  transition:color .3s cubic-bezier(.16,1,.3,1), text-shadow .3s, transform .15s;
+}
+nav a::before{
+  content:""; position:absolute; z-index:-1; pointer-events:none; border-radius:50%;
+  left:var(--ox, 50%); top:var(--oy, 50%); width:var(--d, 0px); height:var(--d, 0px);
+  background:radial-gradient(circle, #f3d9a4, var(--dorado) 45%, var(--ambar));
+  transform:translate(-50%,-50%) scale(0);
+  transition:transform .5s cubic-bezier(.16,1,.3,1);
+}
+nav a[data-relleno]::before{transform:translate(-50%,-50%) scale(1)}
+nav a[data-relleno]{color:var(--noche); text-shadow:none}
+nav a:active{transform:scale(.985)}
+/* Con "reducir movimiento" el color aparece sin la animación del círculo */
+@media (prefers-reduced-motion:reduce){ nav a::before{transition:none} nav a:active{transform:none} }
+
+/* Secciones */
+section{padding:90px 0}
+h1,h2,h3{font-family:var(--serif); font-weight:500; color:var(--tinta); margin:0}
+h1{font-size:clamp(34px,4.6vw,52px); line-height:1.1}
+h2{font-size:clamp(34px,4vw,48px); line-height:1.1; margin-bottom:24px}
+h3{font-size:25px; font-weight:600; line-height:1.2; margin-bottom:8px}
+/* Botones y etiquetas en la sans, con algo más de peso para que destaquen */
+.boton{font-weight:500; letter-spacing:.02em}
+p{margin:0 0 16px}
+.boton{display:inline-block; margin-top:14px; padding:13px 34px; background:var(--boton); color:var(--boton-texto); text-decoration:none; font-size:15px; border:0; border-radius:var(--pildora); cursor:pointer; font-family:inherit; transition:background .2s}
+.boton:hover{background:var(--boton-hover)}
+
+.pasos{display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:20px}
+/* El número toma el mismo tono que el brillo del borde */
+.pasos .num{font-family:var(--cartel); font-size:64px; color:hsl(var(--hue, 30) 75% 68%); line-height:1; margin-bottom:14px}
+.pasos p{color:var(--tenue)}
+
+.aviso{margin-top:70px; padding:32px 36px; border:1px solid var(--acento); border-radius:var(--radio-grande); background:rgba(224,169,109,.08)}
+.aviso h2{margin-bottom:14px}
+.aviso p{font-size:18px; margin:0}
+
+.datos{display:flex; flex-wrap:wrap; justify-content:center; gap:0; margin:50px 0 0; padding:0; list-style:none}
+.datos li{padding:6px 28px; text-align:center}
+.datos li + li{border-left:1px solid var(--linea)}
+.datos b{display:block; font-family:var(--serif); font-weight:500; font-size:30px; color:var(--tinta)}
+.datos span{font-size:14px; color:var(--tenue)}
+
+/* Formulario */
+form{margin-top:40px}
+fieldset{border:0; border-top:1px solid var(--linea); margin:0 0 40px; padding:28px 0 0}
+legend{font-family:var(--serif); font-weight:500; font-size:26px; color:var(--tinta); padding-right:14px}
+.ayuda{color:var(--tenue); font-size:15px; margin-top:-4px}
+.fila{display:grid; grid-template-columns:1fr 1fr; gap:20px}
+.campo{margin-bottom:20px}
+label{display:block; font-size:15px; margin-bottom:6px; color:var(--tinta)}
+label small{color:var(--tenue)}
+/* Marca de campo obligatorio, en rojo (oscuro para que se lea bien sobre el fondo claro) */
+label small.obligatorio{color:#b42318; font-weight:600; font-size:12px; letter-spacing:.04em; text-transform:uppercase; margin-left:4px}
+input[type=text], input[type=email], input[type=tel], input[type=number], select, textarea{
+  width:100%; padding:11px 12px; font:inherit; font-size:16px; color:var(--campo-texto);
+  background:var(--campo); border:1px solid var(--linea); border-radius:var(--radio-peq);
+}
+textarea{min-height:96px; resize:vertical}
+input:focus, select:focus, textarea:focus{outline:2px solid var(--acento); outline-offset:-1px; border-color:var(--acento)}
+.opciones{display:flex; gap:12px; flex-wrap:wrap}
+.opciones label{display:flex; align-items:center; gap:8px; padding:10px 18px; border:1px solid var(--linea); border-radius:var(--pildora); cursor:pointer; margin:0}
+.opciones label:has(input:checked){border-color:var(--boton); background:var(--boton); color:var(--boton-texto)}
+.opciones input{accent-color:var(--boton-texto)}
+.check{display:flex; gap:10px; align-items:flex-start; font-size:15px; color:var(--texto)}
+.check input{margin-top:4px; accent-color:var(--acento)}
+.final{display:flex; align-items:center; gap:24px; flex-wrap:wrap}
+.final p{margin:0; color:var(--tenue); font-size:14px}
+.error{color:var(--error); font-size:15px; min-height:1.4em; margin-top:12px}
+.gracias{border:1px solid var(--acento); border-radius:var(--radio-grande); padding:36px; margin-top:40px}
+.vidrio .gracias{margin-top:0; border:0; padding:0}
+
+/* Reservas: manchas de color detrás para que el cristal tenga algo que desenfocar */
+#reservas{
+  background:
+    radial-gradient(circle 380px at 12% 22%, rgba(122,46,58,.75), transparent),
+    radial-gradient(circle 420px at 90% 48%, rgba(224,140,80,.85), transparent),
+    radial-gradient(circle 340px at 18% 78%, rgba(181,131,141,.85), transparent);
+  position:relative; isolation:isolate;
+}
+/* Shader "Neuro Noise" (components/FondoNeuro.tsx). Ocupa toda la sección, detrás del contenido.
+   Pinta un fondo opaco, así que la máscara lo desvanece arriba y abajo para fundirlo con el
+   degradado de la banda sin bordes. Cuando funciona, la sección quita sus manchas CSS
+   (clase .con-shader); si no hay WebGL, el lienzo queda vacío y se ven las manchas CSS. */
+.fondo-shader{
+  position:absolute; inset:0; width:100%; height:100%; z-index:-1; pointer-events:none;
+  /* Fundido largo y con curva suave (entra y sale despacio) arriba y abajo: el efecto aparece
+     y se pierde poco a poco, sin una línea donde empieza. Un fundido lineal y corto se notaba. */
+  --fundido-shader:linear-gradient(
+    rgba(0,0,0,0) 0%, rgba(0,0,0,.03) 3%, rgba(0,0,0,.1) 6%, rgba(0,0,0,.22) 9%, rgba(0,0,0,.38) 12%,
+    rgba(0,0,0,.56) 15%, rgba(0,0,0,.73) 18%, rgba(0,0,0,.87) 21%, rgba(0,0,0,.96) 24%, #000 27%,
+    #000 72%, rgba(0,0,0,.94) 76%, rgba(0,0,0,.8) 80%, rgba(0,0,0,.6) 84%, rgba(0,0,0,.38) 88%,
+    rgba(0,0,0,.18) 92%, rgba(0,0,0,.06) 96%, rgba(0,0,0,0) 100%);
+  -webkit-mask-image:var(--fundido-shader);
+          mask-image:var(--fundido-shader);
+}
+/* El shader cubre toda la banda 3 (Reservas + Regalo): la banda es su marco de posición */
+.banda-3{position:relative; isolation:isolate}
+.con-shader #reservas{background:none}
+/* El título y la introducción van sobre el shader sin cristal: un halo claro los mantiene legibles */
+#reservas > .estrecho h2, #reservas > .estrecho .seccion-intro,
+.regalo-texto h2, .regalo-texto .antetitulo, .regalo-pasos li{text-shadow:0 0 14px rgba(243,237,226,.9), 0 0 4px rgba(243,237,226,.7)}
+#reservas > .estrecho .seccion-intro{color:#3e2a20}
+
+/* Tarjeta "liquid glass" que contiene el formulario */
+.vidrio{
+  --campo:rgba(255,255,255,.5); --linea:rgba(42,26,20,.2);
+  position:relative; max-width:920px; margin:40px auto 0; padding:52px 56px;
+  border-radius:var(--radio-grande);
+  /* Desenfoque moderado para que el shader de detrás se intuya a través del cristal; el blanco
+     algo más opaco mantiene el texto del formulario legible sobre los tonos oscuros del fondo */
+  background:linear-gradient(160deg, rgba(255,255,255,.55), rgba(255,255,255,.34));
+  -webkit-backdrop-filter:blur(14px) saturate(160%); backdrop-filter:blur(14px) saturate(160%);
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), inset 0 -1px 0 rgba(42,26,20,.08), 0 30px 60px -20px rgba(74,31,43,.45);
+}
+.vidrio form{margin-top:0}
+.vidrio form > fieldset:first-child{border-top:0; padding-top:0}
+
+/* Cuestionario desplegable: la fila de la cuadrícula pasa de 0 a su alto natural,
+   así la animación funciona aunque no se sepa cuánto mide el contenido */
+.desplegable{display:grid; grid-template-rows:0fr; opacity:0; transition:grid-template-rows .7s cubic-bezier(.2,.7,.2,1), opacity .5s ease .15s}
+.desplegable-interior{overflow:hidden; min-height:0}
+.desplegable.abierto{grid-template-rows:1fr; opacity:1}
+.aviso-paso{margin:-14px 0 0; padding:14px 20px; border:1px dashed var(--linea); border-radius:var(--radio-peq); font-size:15px; color:var(--tenue); text-align:center; transition:opacity .3s, margin .4s, padding .4s, max-height .4s; max-height:120px; overflow:hidden}
+.aviso-paso.oculto-suave{opacity:0; max-height:0; margin:0; padding:0 20px; border-width:0}
+@media (prefers-reduced-motion:reduce){.desplegable, .aviso-paso{transition:none}}
+.vidrio .opciones label{background:rgba(255,255,255,.35)}
+.opciones label:has(input:disabled){opacity:.45; cursor:not-allowed; text-decoration:line-through}
+.etiqueta{font-size:15px; margin:0 0 10px; color:var(--tinta)}
+
+/* Selector de fechas: cada día es una entrada de teatro con muescas a los lados */
+.mes{grid-column:1/-1; margin:14px 0 2px; font-family:var(--sans); font-size:14px; letter-spacing:.12em; text-transform:uppercase; color:var(--tenue)}
+.mes:first-child{margin-top:0}
+/* Fondo de la zona de fechas: la foto del vestíbulo bajo un velo crema, para que las entradas
+   se lean bien y parezca que se eligen a la puerta del teatro */
+.tickets{
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(104px,1fr)); gap:12px;
+  padding:20px; border-radius:var(--radio); border:1px solid rgba(255,255,255,.55);
+  background:
+    linear-gradient(rgba(243,237,226,.62), rgba(243,237,226,.74)),
+    url("/Imagenes/vestibulo-fondo.webp") center 70% / cover;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6);
+}
+.tickets .mes{color:#4a3428; font-weight:600}
+.ticket{
+  position:relative; display:flex; flex-direction:column; align-items:center; margin:0;
+  padding:12px 8px 10px; text-align:center; cursor:pointer;
+  background:rgba(255,255,255,.45); border:1px solid rgba(255,255,255,.6); border-radius:var(--radio-peq);
+  box-shadow:0 4px 14px -6px rgba(74,31,43,.35);
+  /* Muescas: cada mitad del ticket recorta un círculo en su borde */
+  -webkit-mask:radial-gradient(circle 7px at 0 64%, #0000 98%, #000) left/51% 100% no-repeat,
+               radial-gradient(circle 7px at 100% 64%, #0000 98%, #000) right/51% 100% no-repeat;
+          mask:radial-gradient(circle 7px at 0 64%, #0000 98%, #000) left/51% 100% no-repeat,
+               radial-gradient(circle 7px at 100% 64%, #0000 98%, #000) right/51% 100% no-repeat;
+  transition:background .2s, color .2s, transform .2s, box-shadow .2s;
+}
+.ticket input{position:absolute; opacity:0; pointer-events:none}
+.ticket .dia{font-size:12px; text-transform:uppercase; letter-spacing:.1em; color:var(--tenue)}
+.ticket .num{font-family:var(--cartel); font-size:40px; line-height:1; color:var(--tinta); margin:2px 0 8px}
+.ticket .plazas{align-self:stretch; padding-top:7px; border-top:1px dashed var(--linea); font-size:12px; color:var(--tenue)}
+.ticket.ultima .plazas{color:var(--acento); font-weight:600}
+.ticket:hover{transform:translateY(-2px); box-shadow:0 10px 20px -8px rgba(74,31,43,.45); background-color:rgba(255,255,255,.65)}
+/* La máscara de las muescas recortaría un outline exterior, así que el foco va por dentro */
+.ticket:has(input:focus-visible){box-shadow:inset 0 0 0 2px var(--acento)}
+.ticket:has(input:checked){background:var(--burdeos); border-color:var(--burdeos)}
+.ticket:has(input:checked) .dia, .ticket:has(input:checked) .num, .ticket:has(input:checked) .plazas{color:var(--manana)}
+.ticket:has(input:checked) .plazas{border-top-color:rgba(243,237,226,.4)}
+.ticket:has(input:disabled){opacity:.45; cursor:not-allowed; transform:none; box-shadow:none}
+.ticket:has(input:disabled) .num{text-decoration:line-through}
+
+/* Brillo que sigue al cursor en las entradas, como en las tarjetas de "Cómo funciona".
+   Las entradas llevan una máscara (las muescas) que recortaría un borde dibujado por fuera,
+   así que aquí el anillo de luz va por dentro del borde y sigue también la forma de las muescas.
+   El JS (TarjetasBrillo) escribe --x/--y en cada entrada y --xp en la cuadrícula. */
+.ticket{
+  --hue:calc(18 + var(--xp, 0) * 32);
+  background-image:radial-gradient(150px circle at calc(var(--x, -999) * 1px) calc(var(--y, -999) * 1px), hsl(var(--hue) 90% 62% / .2), transparent);
+}
+.ticket::before, .ticket::after{
+  content:""; position:absolute; inset:0; border:2px solid transparent; border-radius:inherit; pointer-events:none;
+  background-repeat:no-repeat; background-position:50% 50%; background-size:calc(100% + 4px) calc(100% + 4px);
+  /* La máscara deja ver solo el anillo del borde */
+  -webkit-mask:linear-gradient(transparent, transparent) padding-box, linear-gradient(#fff, #fff) border-box;
+  -webkit-mask-composite:source-in;
+          mask:linear-gradient(transparent, transparent) padding-box, linear-gradient(#fff, #fff) border-box;
+          mask-composite:intersect;
+}
+.ticket::before{
+  background-image:radial-gradient(120px circle at calc(var(--x, -999) * 1px) calc(var(--y, -999) * 1px), hsl(var(--hue) 95% 52%), transparent);
+}
+.ticket::after{
+  background-image:radial-gradient(60px circle at calc(var(--x, -999) * 1px) calc(var(--y, -999) * 1px), hsl(40 100% 97% / .9), transparent);
+}
+/* Las entradas completas no se iluminan */
+.ticket:has(input:disabled)::before, .ticket:has(input:disabled)::after{display:none}
+.ticket:has(input:disabled){background-image:none}
+
+/* Efectos hover: los elementos que se pueden pulsar se elevan un poco.
+   :focus-visible da el mismo efecto a quien navega con teclado. */
+.boton, .opciones label, summary, input, select, textarea, nav svg{transition:background .2s, color .2s, border-color .2s, transform .2s, box-shadow .2s}
+
+nav li:hover, nav li:focus-within{transform:translateY(-2px); box-shadow:inset 0 1px 0 rgba(255,255,255,.45), inset 0 -1px 0 rgba(0,0,0,.25), 0 10px 26px rgba(0,0,0,.45)}
+nav a:hover svg, nav a:focus-visible svg{transform:scale(1.12)}
+nav a:focus-visible{outline:2px solid #fff; outline-offset:2px}
+
+.boton:hover, .boton:focus-visible{transform:translateY(-2px); box-shadow:0 10px 22px -8px rgba(0,0,0,.45)}
+.boton:active{transform:translateY(0); box-shadow:none}
+
+.opciones label:hover{border-color:var(--acento); transform:translateY(-1px)}
+
+summary:hover, summary:focus-visible{color:var(--acento)}
+summary::before{display:inline-block; margin-right:.35em; transition:transform .2s}
+summary:hover::before{transform:translateX(3px)}
+
+input:hover, select:hover, textarea:hover{border-color:var(--acento)}
+
+@media (prefers-reduced-motion:reduce){
+  nav li:hover, nav li:focus-within, .boton:hover, .boton:focus-visible, .opciones label:hover, nav a:hover svg, summary:hover::before, .ticket:hover{transform:none}
+}
+
+/* Preguntas */
+details{border-bottom:1px solid var(--linea); padding:18px 0}
+summary{cursor:pointer; font-size:18px; color:var(--tinta); list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+ "; color:var(--acento)}
+details[open] summary::before{content:"– "}
+details p{color:var(--tenue); margin:12px 0 0}
+
+footer{border-top:1px solid var(--linea); margin:0 20px; padding:50px 0; text-align:center; color:var(--tenue); font-size:14px}
+footer p{margin:6px 0}
+
+@media (max-width:860px){
+  :root{--fundido:200px}
+  nav{left:0; right:0; top:12px}
+  nav ul{justify-content:center; gap:8px}
+  nav a{padding:10px}
+  nav span{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0)}
+  .concepto{padding-top:70px}
+  #experiencia{padding-top:90px}
+  #menu{padding:30px 0 90px}
+  .carta summary{padding:22px 20px}
+  .platos{padding:0 14px}
+  .platos li{padding:20px 18px}
+  .carta-nota{padding:18px 20px 22px}
+  .pasos{grid-template-columns:1fr; gap:28px}
+  .fila{grid-template-columns:1fr; gap:0}
+  section{padding:60px 0}
+  .aviso{padding:24px 22px}
+  .vidrio{margin:30px 12px 0; padding:30px 20px; border-radius:22px}
+}
+@media (max-width:520px){
+  .datos li{padding:8px 16px}
+  .datos li + li{border-left:0}
+}
+
+/* ==========================================================================
+   Añadidos de la versión en Next.js: marca, logo y secciones nuevas
+   ========================================================================== */
+
+/* Utilidades de texto compartidas */
+.seccion-intro{color:var(--tenue); font-size:18px; max-width:680px}
+.seccion-intro em{color:var(--tinta)}
+.antetitulo{margin:0 0 10px; font-size:13px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--acento)}
+.final{margin-top:28px}
+
+/* Marca fija arriba a la izquierda, con el mismo cristal que el menú */
+.marca{
+  position:fixed; top:18px; left:18px; z-index:10; display:flex; align-items:center; gap:10px;
+  padding:6px 20px 6px 7px; border-radius:var(--pildora); text-decoration:none; color:#fff;
+  font-family:var(--serif); font-size:20px; font-weight:500; text-shadow:0 1px 2px rgba(0,0,0,.35);
+  background:linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.06)), rgba(20,16,26,.38);
+  -webkit-backdrop-filter:blur(14px) saturate(160%); backdrop-filter:blur(14px) saturate(160%);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35), inset 0 -1px 0 rgba(0,0,0,.25), 0 6px 20px rgba(0,0,0,.35);
+  transition:transform .2s, box-shadow .2s;
+}
+.marca:hover, .marca:focus-visible{transform:translateY(-2px)}
+.marca-simbolo{width:32px; height:32px; color:var(--dorado); flex:none}
+/* Con seis enlaces en el menú no cabe el nombre completo: se queda solo el símbolo */
+@media (max-width:1320px){ .marca span{display:none} .marca{padding:6px} }
+
+/* Logotipo (pie de página) */
+.logo{display:inline-flex; align-items:center; gap:16px; color:var(--tinta); text-decoration:none}
+.logo-simbolo{width:58px; height:58px; color:var(--acento); flex:none}
+.logo-texto{display:flex; flex-direction:column; font-family:var(--serif); line-height:1; text-align:left}
+.logo-l1{font-size:15px; font-weight:600; letter-spacing:.24em; text-transform:uppercase}
+.logo-l2{font-size:36px; font-style:italic; font-weight:500}
+footer a{text-decoration:none}
+footer a:hover{color:var(--acento)}
+footer .pie-horario{margin-top:24px}
+footer .pie-legal{margin-top:18px}
+
+/* Hero: botón principal + enlace secundario al regalo */
+.hero-acciones{display:flex; align-items:center; flex-wrap:wrap; gap:14px 24px; margin-top:32px}
+.hero-acciones .boton-grande{margin-top:0}
+.enlace-secundario{color:var(--tenue); font-size:15px; text-underline-offset:4px; transition:color .2s}
+.enlace-secundario:hover{color:var(--tinta)}
+
+/* Galería: mosaico de escenas. Sin foto, cada casilla muestra un icono sobre un resplandor */
+#galeria{padding-top:70px}
+.galeria{list-style:none; margin:36px 0 0; padding:0; display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:230px; gap:16px}
+.foto{
+  position:relative; overflow:hidden; border-radius:var(--radio);
+  background:radial-gradient(ellipse 70% 60% at 50% 40%, rgba(var(--tono),.32), transparent 75%),
+             linear-gradient(160deg, rgba(20,16,26,.3), rgba(20,16,26,.72));
+  border:1px solid rgba(243,237,226,.12); box-shadow:0 18px 40px -22px rgba(0,0,0,.7);
+  /* --rebote imita el muelle de framer-motion: se pasa un poco del destino y vuelve */
+  --rebote:cubic-bezier(.34,1.56,.64,1);
+  transition:transform .55s var(--rebote), box-shadow .4s ease;
+}
+.foto-grande{grid-row:span 2}
+/* Todo el ancho y dos filas: la foto horizontal de la salida casi no se recorta */
+.foto-ancha{grid-column:1/-1; grid-row:span 2}
+.foto img{object-fit:cover; transition:transform .7s var(--rebote)}
+
+/* Al pasar el ratón: la tarjeta sube y la imagen crece y se eleva dentro de ella */
+.foto:hover{transform:translateY(-10px); box-shadow:0 34px 50px -26px rgba(0,0,0,.85)}
+.foto:hover img{transform:scale(1.12) translateY(-12px)}
+.foto:hover .foto-icono{transform:translate(-50%,-50%) scale(1.25) translateY(-10px)}
+
+.foto-icono{
+  position:absolute; left:50%; top:42%; width:64px; height:64px; transform:translate(-50%,-50%);
+  fill:none; stroke:rgb(var(--tono)); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; opacity:.85;
+  transition:transform .7s var(--rebote);
+}
+.foto-grande .foto-icono{width:92px; height:92px}
+
+
+/* La compañía */
+#compania{padding-bottom:40px}
+.compania-cabecera{display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:end; margin-bottom:22px}
+.compania-cabecera h2{margin:0}
+.manifiesto{margin:0; padding-left:24px; border-left:2px solid var(--acento); font-family:var(--serif); font-style:italic; font-size:clamp(22px,2.4vw,30px); line-height:1.3; color:var(--tinta)}
+/* Las tarjetas del equipo usan el mismo efecto .glow que "Cómo funciona" */
+.equipo{margin:40px 0 0; display:grid; grid-template-columns:repeat(3,1fr); gap:24px}
+/* La raya sobre cada título toma el mismo tono que el brillo del borde, como los números de los pasos */
+.equipo h3::before{content:""; display:block; width:28px; height:2px; margin-bottom:18px; background:hsl(var(--hue, 30) 75% 68%)}
+.equipo p{margin:0; color:var(--tenue)}
+
+/* Regala una cena: texto con pasos y una tarjeta regalo dibujada como entrada de teatro */
+#regalo{padding-top:30px}
+.regalo{display:grid; grid-template-columns:1.1fr .9fr; gap:56px; align-items:center}
+.regalo-pasos{margin:8px 0 30px; padding:0; list-style:none; counter-reset:paso}
+.regalo-pasos li{position:relative; padding:12px 0 12px 46px; border-bottom:1px solid var(--linea); counter-increment:paso}
+.regalo-pasos li::before{content:counter(paso); position:absolute; left:0; top:9px; font-family:var(--cartel); font-size:30px; line-height:1; color:var(--acento)}
+/* La tarjeta queda un poco girada sobre la mesa; el efecto 3D va dentro (TarjetaHolo) */
+.tarjeta-regalo{transform:rotate(-3deg)}
+
+/* Efecto holográfico (components/TarjetaHolo.tsx). El JS escribe la inclinación en transform
+   y la posición de la luz en --holo-px / --holo-py (0 a 1 sobre la tarjeta). */
+.holo{position:relative; perspective:1100px; touch-action:pan-y}
+.holo-tarjeta{
+  position:relative; display:grid; grid-template-columns:1fr auto; overflow:hidden;
+  border-radius:var(--radio-grande); transform-style:preserve-3d; will-change:transform;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 30px 50px -24px rgba(74,31,43,.55);
+}
+/* Lámina holográfica en los colores de la marca, con un rayado fino de "tinta impresa".
+   Su centro sigue al cursor y el tono gira un poco con la inclinación. */
+.holo-lamina{
+  position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+  mix-blend-mode:color-dodge; opacity:.3;
+  background:
+    repeating-linear-gradient(115deg, rgba(255,255,255,.06) 0 1px, transparent 1px 5px),
+    conic-gradient(from 210deg at calc(var(--holo-px, .5) * 100%) calc(var(--holo-py, .5) * 100%),
+      var(--dorado) 0deg, var(--ambar) 70deg, #fff3c4 140deg, var(--rosa) 210deg, var(--burdeos) 280deg, var(--dorado) 360deg);
+  filter:hue-rotate(calc(var(--holo-tono, 0) * 1deg)) saturate(1.25);
+}
+/* Reflejo de luz pegado al cursor: se intensifica cuanto más se inclina la tarjeta */
+.holo-luz{
+  position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+  mix-blend-mode:screen; opacity:var(--holo-brillo, .3);
+  background:radial-gradient(220px circle at calc(var(--holo-px, .5) * 100%) calc(var(--holo-py, .5) * 100%), rgba(255,240,214,.6), transparent 65%);
+}
+/* Sombra en el suelo: se desplaza al contrario que la inclinación */
+.holo-sombra{
+  position:absolute; left:8%; right:8%; bottom:-26px; height:44px; border-radius:50%; pointer-events:none;
+  background:radial-gradient(50% 50% at 50% 50%, rgba(74,31,43,.45), transparent 70%); will-change:transform;
+}
+@media (forced-colors:active){ .holo-lamina, .holo-luz, .holo-sombra{display:none} }
+.tarjeta-regalo-cuerpo{
+  display:flex; flex-direction:column; gap:8px; padding:34px 30px; color:var(--manana);
+  background:linear-gradient(150deg, var(--vino), #2a1119);
+}
+.tarjeta-regalo-simbolo{width:48px; height:48px; margin-bottom:6px; color:var(--dorado)}
+.tarjeta-regalo-tipo{font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--ambar)}
+.tarjeta-regalo-titulo{font-family:var(--serif); font-size:36px; font-style:italic; line-height:1.05}
+.tarjeta-regalo-para{margin-top:8px; font-size:14px; color:#d9c3bf}
+.tarjeta-regalo-talon{
+  /* gap: sin él, en tarjetas bajas los dos textos se juntaban ("MESESNº 0412") */
+  display:flex; justify-content:space-between; gap:22px; padding:28px 16px; writing-mode:vertical-rl;
+  border-left:2px dashed rgba(243,237,226,.35);
+  background:linear-gradient(150deg, #5a2734, #33141d);
+  font-family:var(--cartel); font-size:15px; letter-spacing:.12em; color:var(--dorado);
+}
+
+@media (prefers-reduced-motion:reduce){
+  .marca:hover, .marca:focus-visible{transform:none}
+  .foto img, .foto:hover img{transition:none; transform:none}
+  .foto:hover{transform:none}
+  .foto:hover .foto-icono{transform:translate(-50%,-50%)}
+}
+
+@media (max-width:860px){
+  .marca{display:none}
+  .hero-acciones{justify-content:center}
+  .galeria{grid-template-columns:1fr 1fr; grid-auto-rows:180px; gap:12px}
+  .foto-grande{grid-row:auto}
+  .foto-ancha{grid-column:1/-1; grid-row:span 2}
+  .compania-cabecera, .equipo, .regalo{grid-template-columns:1fr}
+  .regalo{gap:40px}
+  .tarjeta-regalo{max-width:440px; margin:0 auto 20px}
+}
+@media (max-width:520px){
+  .galeria{grid-template-columns:1fr}
+}
+
+/* Rendimiento: las secciones de más abajo no se procesan hasta que se acercan a la pantalla.
+   contain-intrinsic-size reserva un alto aproximado para que la barra de scroll no salte. */
+#galeria, #compania, #preguntas{content-visibility:auto; contain-intrinsic-size:auto 900px}
+
+/* ==========================================================================
+   Ajustes para móvil (revisados con capturas a 390 px de ancho)
+   ========================================================================== */
+@media (max-width:600px){
+  /* Datos de "Cómo funciona" en una cuadrícula de 2 × 2 en lugar de 3 + 1 suelto */
+  .datos{display:grid; grid-template-columns:1fr 1fr; gap:18px 0}
+  .datos li{padding:6px 10px}
+  .datos li + li{border-left:0}
+  .datos li:nth-child(even){border-left:1px solid var(--linea)}
+
+  /* Entradas de fecha: 4 por fila y más compactas (con 2 por fila las 22 fechas ocupaban 11 filas) */
+  .tickets{grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px; padding:12px}
+  .ticket{padding:9px 4px 7px}
+  .ticket .dia{font-size:10px; letter-spacing:.06em}
+  .ticket .num{font-size:28px; margin:1px 0 6px}
+  .ticket .plazas{font-size:9.5px; padding-top:5px; line-height:1.25}
+  .mes{font-size:12px}
+
+  /* Tarjeta regalo más compacta */
+  .tarjeta-regalo-cuerpo{padding:24px 20px; gap:6px}
+  .tarjeta-regalo-simbolo{width:38px; height:38px}
+  .tarjeta-regalo-titulo{font-size:28px}
+  .tarjeta-regalo-para{font-size:13px}
+  .tarjeta-regalo-talon{padding:20px 12px; font-size:13px}
+}
