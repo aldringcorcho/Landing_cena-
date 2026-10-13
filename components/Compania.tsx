@@ -1,5 +1,3 @@
-import TarjetasBrillo from "./TarjetasBrillo";
-
 const EQUIPO = [
   {
     rol: "Dirección y dramaturgia",
@@ -31,16 +29,14 @@ export default function Compania() {
         <p className="seccion-intro">
           Teatro inmersivo: el espectador no mira la obra, la protagoniza.
         </p>
-        {/* Mismas tarjetas con brillo que "Cómo funciona": el borde se ilumina donde está el cursor */}
-        <TarjetasBrillo className="equipo">
+        <div className="equipo">
           {EQUIPO.map((m) => (
-            <article className="glow" key={m.rol}>
-              <div className="glow-halo" aria-hidden="true" />
+            <article key={m.rol}>
               <h3>{m.rol}</h3>
               <p>{m.texto}</p>
             </article>
           ))}
-        </TarjetasBrillo>
+        </div>
       </div>
     </section>
   );

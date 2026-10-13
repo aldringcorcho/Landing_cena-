@@ -1,6 +1,8 @@
 import Nav from "@/components/Nav";
 import FondoNeuro from "@/components/FondoNeuro";
 import ScrollSuave from "@/components/ScrollSuave";
+import Revelado from "@/components/Revelado";
+import BotonReservarMovil from "@/components/BotonReservarMovil";
 import Hero from "@/components/Hero";
 import Concepto from "@/components/Concepto";
 import Proceso from "@/components/Proceso";
@@ -18,6 +20,8 @@ export default function Inicio() {
   return (
     <>
       <ScrollSuave />
+      <Revelado />
+      <BotonReservarMovil />
       <Nav />
 
       {/* Banda 1 · Noche: la promesa */}

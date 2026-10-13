@@ -451,7 +451,7 @@ input:focus, select:focus, textarea:focus{outline:2px solid var(--acento); outli
   display:grid; grid-template-columns:repeat(auto-fill, minmax(104px,1fr)); gap:12px;
   padding:20px; border-radius:var(--radio); border:1px solid rgba(255,255,255,.55);
   background:
-    linear-gradient(rgba(243,237,226,.62), rgba(243,237,226,.74)),
+    linear-gradient(rgba(243,237,226,.8), rgba(243,237,226,.86)),
     url("/Imagenes/vestibulo-fondo.webp") center 70% / cover;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.6);
 }
@@ -482,39 +482,11 @@ input:focus, select:focus, textarea:focus{outline:2px solid var(--acento); outli
 .ticket:has(input:disabled){opacity:.45; cursor:not-allowed; transform:none; box-shadow:none}
 .ticket:has(input:disabled) .num{text-decoration:line-through}
 
-/* Brillo que sigue al cursor en las entradas, como en las tarjetas de "Cómo funciona".
-   Las entradas llevan una máscara (las muescas) que recortaría un borde dibujado por fuera,
-   así que aquí el anillo de luz va por dentro del borde y sigue también la forma de las muescas.
-   El JS (TarjetasBrillo) escribe --x/--y en cada entrada y --xp en la cuadrícula. */
-.ticket{
-  --hue:calc(18 + var(--xp, 0) * 32);
-  background-image:radial-gradient(150px circle at calc(var(--x, -999) * 1px) calc(var(--y, -999) * 1px), hsl(var(--hue) 90% 62% / .2), transparent);
-}
-.ticket::before, .ticket::after{
-  content:""; position:absolute; inset:0; border:2px solid transparent; border-radius:inherit; pointer-events:none;
-  background-repeat:no-repeat; background-position:50% 50%; background-size:calc(100% + 4px) calc(100% + 4px);
-  /* La máscara deja ver solo el anillo del borde */
-  -webkit-mask:linear-gradient(transparent, transparent) padding-box, linear-gradient(#fff, #fff) border-box;
-  -webkit-mask-composite:source-in;
-          mask:linear-gradient(transparent, transparent) padding-box, linear-gradient(#fff, #fff) border-box;
-          mask-composite:intersect;
-}
-.ticket::before{
-  background-image:radial-gradient(120px circle at calc(var(--x, -999) * 1px) calc(var(--y, -999) * 1px), hsl(var(--hue) 95% 52%), transparent);
-}
-.ticket::after{
-  background-image:radial-gradient(60px circle at calc(var(--x, -999) * 1px) calc(var(--y, -999) * 1px), hsl(40 100% 97% / .9), transparent);
-}
-/* Las entradas completas no se iluminan */
-.ticket:has(input:disabled)::before, .ticket:has(input:disabled)::after{display:none}
-.ticket:has(input:disabled){background-image:none}
 
 /* Efectos hover: los elementos que se pueden pulsar se elevan un poco.
    :focus-visible da el mismo efecto a quien navega con teclado. */
 .boton, .opciones label, summary, input, select, textarea, nav svg{transition:background .2s, color .2s, border-color .2s, transform .2s, box-shadow .2s}
 
-nav li:hover, nav li:focus-within{transform:translateY(-2px); box-shadow:inset 0 1px 0 rgba(255,255,255,.45), inset 0 -1px 0 rgba(0,0,0,.25), 0 10px 26px rgba(0,0,0,.45)}
-nav a:hover svg, nav a:focus-visible svg{transform:scale(1.12)}
 nav a:focus-visible{outline:2px solid #fff; outline-offset:2px}
 
 .boton:hover, .boton:focus-visible{transform:translateY(-2px); box-shadow:0 10px 22px -8px rgba(0,0,0,.45)}
@@ -645,10 +617,15 @@ footer .pie-legal{margin-top:18px}
 .compania-cabecera{display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:end; margin-bottom:22px}
 .compania-cabecera h2{margin:0}
 .manifiesto{margin:0; padding-left:24px; border-left:2px solid var(--acento); font-family:var(--serif); font-style:italic; font-size:clamp(22px,2.4vw,30px); line-height:1.3; color:var(--tinta)}
-/* Las tarjetas del equipo usan el mismo efecto .glow que "Cómo funciona" */
+/* Tarjetas del equipo: cristal simple (el brillo que sigue al cursor queda solo en "Cómo funciona") */
 .equipo{margin:40px 0 0; display:grid; grid-template-columns:repeat(3,1fr); gap:24px}
 /* La raya sobre cada título toma el mismo tono que el brillo del borde, como los números de los pasos */
-.equipo h3::before{content:""; display:block; width:28px; height:2px; margin-bottom:18px; background:hsl(var(--hue, 30) 75% 68%)}
+.equipo article{
+  padding:34px 30px 30px; border-radius:var(--radio-grande);
+  background:linear-gradient(160deg, rgba(243,237,226,.1), rgba(243,237,226,.03));
+  border:1px solid rgba(243,237,226,.14); box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 1rem 2rem -1rem rgba(0,0,0,.6);
+}
+.equipo h3::before{content:""; display:block; width:28px; height:2px; margin-bottom:18px; background:var(--acento)}
 .equipo p{margin:0; color:var(--tenue)}
 
 /* Regala una cena: texto con pasos y una tarjeta regalo dibujada como entrada de teatro */
@@ -757,3 +734,40 @@ footer .pie-legal{margin-top:18px}
   .tarjeta-regalo-para{font-size:13px}
   .tarjeta-regalo-talon{padding:20px 12px; font-size:13px}
 }
+
+/* ==========================================================================
+   Aparición al hacer scroll (components/Revelado.tsx)
+   ========================================================================== */
+/* Oculto solo mientras espera; al entrar en pantalla aparece con un leve ascenso.
+   Fill "backwards": cuando termina no deja ningún transform fijado, así siguen funcionando
+   los efectos al pasar el ratón (fotos de la galería, tarjetas…). */
+.revelar:not(.visible){opacity:0}
+.revelar.visible{animation:aparecer .9s cubic-bezier(.2,.7,.2,1) var(--retraso, 0s) backwards}
+@keyframes aparecer{from{opacity:0; transform:translateY(26px)}to{opacity:1; transform:none}}
+
+/* Frase gancho palabra a palabra: cada palabra llega desenfocada y se asienta */
+.gancho .palabra{display:inline-block}
+.revelar-palabras:not(.visible) .palabra{opacity:0}
+.revelar-palabras.visible .palabra{animation:palabra .8s cubic-bezier(.2,.7,.2,1) calc(var(--i) * 65ms) backwards}
+@keyframes palabra{from{opacity:0; transform:translateY(.35em); filter:blur(6px)}to{opacity:1; transform:none; filter:none}}
+
+/* ==========================================================================
+   Botón "Reservar" fijo en móvil (components/BotonReservarMovil.tsx)
+   ========================================================================== */
+.reservar-movil{display:none}
+@media (max-width:860px){
+  .reservar-movil{
+    display:block; position:fixed; z-index:20; left:50%; bottom:calc(16px + env(safe-area-inset-bottom));
+    padding:15px 30px; border-radius:var(--pildora); white-space:nowrap;
+    font-size:16px; font-weight:600; letter-spacing:.02em; text-decoration:none; color:var(--manana);
+    background:linear-gradient(180deg, #8e3a48, var(--burdeos));
+    border:1px solid rgba(255,255,255,.25);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 12px 30px -8px rgba(20,16,26,.6);
+    /* Escondido debajo de la pantalla hasta que toca mostrarlo */
+    transform:translate(-50%, 140%); opacity:0; pointer-events:none;
+    transition:transform .5s cubic-bezier(.2,.7,.2,1), opacity .3s ease;
+  }
+  .reservar-movil.visible{transform:translate(-50%, 0); opacity:1; pointer-events:auto}
+  .reservar-movil:active{transform:translate(-50%, 0) scale(.97)}
+}
+@media (prefers-reduced-motion:reduce){ .reservar-movil{transition:opacity .2s} }

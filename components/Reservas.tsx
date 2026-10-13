@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { fechasTemporada, MESES, PASES } from "@/lib/temporada";
-import TarjetasBrillo from "./TarjetasBrillo";
 
 interface Confirmacion {
   nombre: string;
@@ -113,8 +112,7 @@ export default function Reservas() {
               <legend>1. Fecha y pase</legend>
               <div className="campo">
                 {/* Sin título visible: la leyenda "1. Fecha y pase" ya lo dice. El nombre queda para lectores de pantalla */}
-                {/* Las entradas tienen el mismo brillo que sigue al cursor que las tarjetas de "Cómo funciona" */}
-                <TarjetasBrillo className="tickets" selector=".ticket" role="radiogroup" aria-label="Fecha">
+                <div className="tickets" role="radiogroup" aria-label="Fecha">
                   {porMes.map(([mes, delMes]) => [
                     <p className="mes" key={`mes-${mes}`}>{MESES[mes]}</p>,
                     ...delMes.map((f) => (
@@ -135,7 +133,7 @@ export default function Reservas() {
                       </label>
                     )),
                   ])}
-                </TarjetasBrillo>
+                </div>
               </div>
               <div className="campo">
                 <p className="etiqueta" id="titulo-pase">Pase</p>
